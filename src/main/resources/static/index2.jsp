@@ -1,8 +1,12 @@
-<!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org">
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
 <head>
-	 <meta charset="UTF-8">
+   <meta charset="UTF-8">
    <title>JWT Spring Security Demo</title>
 
    <!-- Latest compiled and minified CSS -->
@@ -62,20 +66,14 @@
          </div>
       </div>
       
-      
-    <!-- register form -->  
-    <div class="col-md-6">
+        <div class="col-md-6">
          <div class="panel panel-default" id="register">
           <div class="panel-heading">
                <h3 class="panel-title">Registration</h3>
             </div>
          <div class="panel-body">
-<!--          <form method="POST" id="regForm" th:object="${user}" >
- -->       
-  <form autocomplete="off" action="auth/registration"
-					th:object="${user}" method="post" class="form-horizontal" 
-					role="form"> 
-					<!-- <form id="regForm">    -->   
+         <form:form method="POST" id="regForm" modelAttribute="user">
+               
                   <div class="form-group">
                 First Name:<input type="text" class="form-control" id="exampleInputEmail1" placeholder="First Name"
                             required name="firstname">
@@ -98,17 +96,12 @@
                   </div>
                   
                   <button type="submit" class="btn btn-default">register</button>
-                  <span th:utext="${successMessage}"></span>
-              </form>
+              </form:form>
             </div>
          
          
          </div>
-         </div>      
-      
-      
-      
-      
+         </div>    
       
       
       
@@ -164,6 +157,5 @@
         crossorigin="anonymous"></script>
 <script src="js/libs/jwt-decode.min.js"></script>
 <script src="js/client.js"></script>
-
 </body>
 </html>

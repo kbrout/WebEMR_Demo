@@ -10,6 +10,7 @@ $(function () {
     var $loggedInBody = $("#loggedInBody");
     var $response = $("#response");
     var $login = $("#login");
+    var $register=$("#register");
     var $userInfo = $("#userInfo").hide();
 
     // FUNCTIONS =============================================================
@@ -32,12 +33,47 @@ $(function () {
             data: JSON.stringify(loginData),
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            success: function (data, textStatus, jqXHR) {
-                console.log(data);
+            success: function(data, textStatus, jqXHR){
+                console.log("data........."+JSON.stringify(data));
+                console.log("textStatus..."+JSON.stringify(textStatus));
+                console.log("jqXHR..."+JSON.stringify(jqXHR));
                 setJwtToken(data.token);
                 $login.hide();
+                $register.hide();
                 $notLoggedIn.hide();
                 showTokenInformation();
+                showUserInformation();
+            },
+            error: function (jqXHR,textStatus,errorThrown) {
+                if (jqXHR.status === 401 || jqXHR.status === 403) {
+                    $('#loginErrorModal')
+                        .modal("show")
+                        .find(".modal-body")
+                        .empty()
+                        .html("<p>Message from server:<br>" + jqXHR.responseText + "</p>");
+                } else {
+                    throw new Error("an unexpected error occured: " + errorThrown);
+                }
+            }
+        });
+    }
+    
+    function doRegister(regData) {
+        $.ajax({
+            url: "/auth/registration",
+            type: "POST",
+            data: JSON.stringify(regData),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (data, textStatus, jqXHR) {
+                console.log("data........."+JSON.stringify(data));
+                console.log("textStatus..."+JSON.stringify(textStatus));
+                console.log("jqXHR..."+JSON.stringify(jqXHR));
+                setJwtToken(data.token);
+                $login.hide();
+                $register.hide();
+                $notLoggedIn.hide();
+               // showTokenInformation();
                 showUserInformation();
             },
             error: function (jqXHR, textStatus, errorThrown) {
@@ -53,6 +89,22 @@ $(function () {
             }
         });
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     function doLogout() {
         removeJwtToken();
@@ -63,6 +115,7 @@ $(function () {
         $loggedIn.hide();
         $loggedInBody.empty();
         $notLoggedIn.show();
+        $register.show();
     }
 
     function createAuthorizationTokenHeader() {
@@ -78,10 +131,11 @@ $(function () {
         $.ajax({
             url: "/user",
             type: "GET",
-            contentType: "application/json; charset=utf-8",
+            contentType:"application/json; charset=utf-8",
             dataType: "json",
             headers: createAuthorizationTokenHeader(),
             success: function (data, textStatus, jqXHR) {
+            	console.log("data2...."+JSON.stringify(data));
                 var $userInfoBody = $userInfo.find("#userInfoBody");
 
                 $userInfoBody.append($("<div>").text("Username: " + data.username));
@@ -117,6 +171,7 @@ $(function () {
         $loggedInBody.append($table);
 
         $loggedIn.show();
+        
     }
 
     function appendKeyValue($table, key, value) {
@@ -133,6 +188,22 @@ $(function () {
     }
 
     // REGISTER EVENT LISTENERS =============================================================
+    $("#regForm").submit(function (event) {
+    	console.log("inside regForm");
+        event.preventDefault();
+
+        var $form = $(this);
+        var formData = {
+            firstname: $form.find('input[name="firstname"]').val(),
+            lastname: $form.find('input[name="lastname"]').val(),
+        	username: $form.find('input[name="username"]').val(),
+            password: $form.find('input[name="password"]').val(),
+            email: $form.find('input[name="email"]').val()
+        };
+
+        doRegister(formData);
+    });
+    
     $("#loginForm").submit(function (event) {
         event.preventDefault();
 
@@ -169,7 +240,7 @@ $(function () {
             type: "GET",
             contentType: "application/json; charset=utf-8",
             headers: createAuthorizationTokenHeader(),
-            success: function (data, textStatus, jqXHR) {
+            success: function (data, textStatus, jqXHR){
                 showResponse(jqXHR.status, data);
             },
             error: function (jqXHR, textStatus, errorThrown) {
